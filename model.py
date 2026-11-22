@@ -75,8 +75,11 @@ def apply_standardizer(X, mean, std):
     # TODO: Return the scaled matrix (X - mean) / std via broadcasting.
     return (X - mean) / std
 
-# Step 9 - add_bias_column (not yet solved)
-# TODO: implement
+# Step 9 - add_bias_column
+def add_bias_column(X):
+    N = X.shape[0] # Узнаем количество строк (N)
+    N1 = np.ones((N, 1)) # Создаем столбец из единиц формы (N, 1)
+    return np.hstack((N1, X)) # Приклеиваем его слева к матрице X (горизонтально)
 
 # Step 10 - make_shuffled_indices (not yet solved)
 # TODO: implement
