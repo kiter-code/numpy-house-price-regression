@@ -81,8 +81,16 @@ def add_bias_column(X):
     N1 = np.ones((N, 1)) # Создаем столбец из единиц формы (N, 1)
     return np.hstack((N1, X)) # Приклеиваем его слева к матрице X (горизонтально)
 
-# Step 10 - make_shuffled_indices (not yet solved)
-# TODO: implement
+# Step 10 - make_shuffled_indices
+def make_shuffled_indices(n_samples, seed):
+   # 1. Создаем изолированный генератор случайных чисел с нашим seed
+    rng = np.random.RandomState(seed)
+    
+    # 2. Генерируем перемешанный массив чисел от 0 до n_samples-1
+    # Метод permutation(n) создает массив от 0 до n-1 и перемешивает его
+    shuffled_indices = rng.permutation(n_samples)
+    
+    return shuffled_indices
 
 # Step 11 - partition_indices (not yet solved)
 # TODO: implement
