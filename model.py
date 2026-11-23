@@ -232,8 +232,27 @@ def make_train_val_test(X, y, train_ratio, val_ratio, seed):
         'X_test': X_test, 'y_test': y_test
     }
 
-# Step 22 - standardize_and_add_bias (not yet solved)
-# TODO: implement
+# Step 22 - standardize_and_add_bias
+def standardize_and_add_bias(splits):
+    # 1. Вычисляем среднее и стандартное отклонение ТОЛЬКО на train
+    mean, std = fit_standardizer(splits['X_train'])
+    
+    # 2. Применяем преобразование и добавляем столбец смещения
+    X_train_std = add_bias_column(apply_standardizer(splits['X_train'], mean, std))
+    X_val_std = add_bias_column(apply_standardizer(splits['X_val'], mean, std))
+    X_test_std = add_bias_column(apply_standardizer(splits['X_test'], mean, std))
+    
+    # 3. Собираем новый словарь
+    std_splits = {
+        'X_train': X_train_std,
+        'y_train': splits['y_train'],  # y не меняется
+        'X_val': X_val_std,
+        'y_val': splits['y_val'],
+        'X_test': X_test_std,
+        'y_test': splits['y_test']
+    }
+    
+    return std_splits, mean, std
 
 # Step 23 - evaluate_predictions (not yet solved)
 # TODO: implement
