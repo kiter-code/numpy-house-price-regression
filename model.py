@@ -116,11 +116,13 @@ def subset_xy(X, y, indices):
     return X_sub, y_sub
 
 # Step 13 - ols_fit
+import numpy as np
+
 def ols_fit(X, y):
-    # TODO: return the ordinary-least-squares weight vector for a linear model.
-    A = X.T @ X
-    b = X.T @ y
-    return np.linalg.solve(A, b)
+    # np.linalg.lstsq возвращает кортеж, где первый элемент [0] — это искомый вектор theta.
+    # rcond=None подавляет предупреждение о будущих версиях numpy.
+    theta, residuals, rank, s = np.linalg.lstsq(X, y, rcond=None)
+    return theta
 
 # Step 14 - ols_predict
 def ols_predict(X, theta):
@@ -263,6 +265,37 @@ def evaluate_predictions(y_true, y_pred):
         'residual_summary': residual_summary(y_true, y_pred)
     }
 
-# Step 24 - house_price_pipeline (not yet solved)
-# TODO: implement
+# Step 24 - house_price_pipeline
+def house_price_pipeline(X, y, ratio_num_idx, ratio_den_idx, cat_labels=None, train_ratio=0.6, val_ratio=0.2, seed=42):
+    # 1. Очистка признаков
+    X_clean = prepare_cleaned_features(X, iqr_k=1.5)
+    
+    # 2. Сборка матрицы признаков (добавление отношения и категорий)
+    X_feat = assemble_feature_matrix(X_clean, ratio_num_idx, ratio_den_idx, cat_labels=cat_labels)
+    
+    # 3. Разделение на train/val/test
+    splits = make_train_val_test(X_feat, y, train_ratio, val_ratio, seed)
+    
+    # 4. Стандартизация и добавление bias
+    std_splits, _, _ = standardize_and_add_bias(splits)
+    
+    # 5. Обучение OLS
+    theta = ols_fit(std_splits['X_train'], std_splits['y_train'])
+    
+    # 6. Предсказания
+    y_val_pred = ols_predict(std_splits['X_val'], theta)
+    y_test_pred = ols_predict(std_splits['X_test'], theta)
+    
+    # 7. Вычисление метрик
+    val_metrics = evaluate_predictions(std_splits['y_val'], y_val_pred)
+    test_metrics = evaluate_predictions(std_splits['y_test'], y_test_pred)
+    
+    # 8. Формирование ответа
+    return {
+        'theta': theta,
+        'y_test': std_splits['y_test'],
+        'y_test_pred': y_test_pred,
+        'test_metrics': test_metrics,
+        'val_metrics': val_metrics
+    }
 
