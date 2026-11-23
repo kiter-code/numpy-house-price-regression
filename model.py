@@ -191,8 +191,23 @@ def prepare_cleaned_features(X, iqr_k=1.5):
     lower, upper = compute_iqr_bounds(X_imp, iqr_k)
     return clip_columns(X_imp, lower, upper)
 
-# Step 20 - assemble_feature_matrix (not yet solved)
-# TODO: implement
+# Step 20 - assemble_feature_matrix
+def assemble_feature_matrix(X_num, ratio_num_idx, ratio_den_idx, cat_labels=None):
+    # TODO: build an extended feature matrix by appending a derived ratio...
+    numerator = X_num[:, ratio_num_idx]
+    denominator = X_num[:, ratio_den_idx]
+    # 2. Формируем признак отношения
+    ratio = make_ratio_feature(numerator, denominator)
+    
+    # 3. Добавляем столбец к исходной матрице
+    X_extended = append_column(X_num, ratio)
+    
+    # 4. Добавляем категориальные признаки, если они есть
+    if cat_labels is not None:
+        cat_block = one_hot_encode(cat_labels)
+        X_extended = np.hstack([X_extended, cat_block])
+        
+    return X_extended
 
 # Step 21 - make_train_val_test (not yet solved)
 # TODO: implement
